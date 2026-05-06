@@ -102,7 +102,7 @@ func (s *TaskStore) UpdateTask(id int, input models.UpdateTaskInput) (*models.Ta
 	query := `
 UPDATE tasks
 set title = $1, description = $2, completed = $3, updated_at = $4
-WHERE id = $5;
+WHERE id = $5
 returning id, title, description, completed, created_at, updated_at;`
 
 	var updatedTask models.Task
