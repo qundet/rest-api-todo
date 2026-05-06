@@ -115,9 +115,30 @@ func (h *Handlers) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseWithJSON(w, http.StatusCreated, updatedTask)
+	responseWithJSON(w, http.StatusOK, updatedTask)
 }
 
+func (h *Handlers) DeleteTask(w http.ResponseWriter, r *http.Request) {
+	id, err := getIdFromPath(r.URL.Path)
+
+	if err != nil {
+		responseWithError(w, http.StatusBadRequest, "Bad task id")
+		return
+	}
+
+	err = h.store.Delete(id)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "record not found") {
+			responseWithError(w, http.StatusBadRequest, "Bad task id")
+		} else {
+			responseWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	responseWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+}
 func getIdFromPath(path string) (int, error) {
 
 	pathParts := strings.Split(strings.TrimPrefix(path, "/tasks/"), "/")
